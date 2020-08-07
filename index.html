@@ -17,10 +17,10 @@
         <div class="question-label"></div>
       </div>
     </div>
-    <div class="game">
+    <div id="game" class="game">
 
       <!-- player 1 -->
-      <div class ="player">
+      <div id="player1" class ="player">
         <h3> player 1 </h3>
         <div class = "player_information">
           <Label><b>Name:</b> <p id = "name_player1"></p></Label>  <!-- insert name of the player1  -->
@@ -32,11 +32,13 @@
       <!-- turn player -->
       <div>
         <label>turn: <h3 id="turn_player"></h3><label> <!-- insert name of the turn player -->
-        <div id="buttons"></div> <!-- reset and newGame buttons -->
+          <button id="resetBtn">Reset game</button> <!-- reset buttons -->
+          <button id="newGameBtn">New game</button> <!-- newGame buttons -->
+          <h3 id="infoBoard" class="infoBoard"></h3>
       </div>
 
       <!-- player 2 -->
-      <div class="player">
+      <div id="player2" class="player">
         <h3> player 2 </h3>
         <div class = "player_information">
           <Label><b>Name: </b><p id = "name_player2"></p></Label><!-- insert name of the player2  -->

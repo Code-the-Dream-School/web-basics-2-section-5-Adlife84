@@ -11,9 +11,193 @@
 //As our previous Battleship, the winner is the player that hits the 4 opponent's ships first
 //one more Thing create a 'reset' and a 'new game' buttons as childs of the element with the id 'buttons'. the reset button has to start the game again and the new game create a new game with new players and a new random board.
 
-const board_Player1 = document.getElementById('board_player1');
 
-for (var x = 0; x < 4; x++) {
+//Global variable
+const howManyShips = 4;
+
+///Step 1: Create Players
+
+// Create Player1 object 
+let player1 = {
+  name: '',
+  shipCount: howManyShips,
+  gameBoard: [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]
+  ]
+};
+
+// Create Player2 object
+let player2 = {
+  name: '',
+  shipCount: howManyShips,
+  gameBoard: [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]
+  ]
+};
+
+
+// Ask user names of players 
+askNamePlayers = () => {
+  player1.name = prompt("Give me name a first player.");
+  player2.name = prompt("Give me name a second second player.")
+}
+
+askNamePlayers();
+
+//Function that generate random 4 ships on the player board. Pass player object into the function
+addShipsToBoard = (player) => {
+
+  //Generate a random number from 0 to 3
+  genRandomNum = () => {
+    //return Math.floor(Math.random() * (max - min + 1) + min);
+    return Math.floor(Math.random() * 4);
+  }
+
+  for (let i = 0; i < player.shipCount; i++) {
+    let x = genRandomNum();
+    let y = genRandomNum();
+
+    if (player.gameBoard[x][y] !== 1) {
+      player.gameBoard[x][y] = 1
+    } else {
+      i--;
+    };
+
+  }
+};
+
+//Generate ships on the board for each player
+addShipsToBoard(player1);
+addShipsToBoard(player2);
+
+//Show gameBoard of player in console
+console.log(player1.gameBoard);
+console.log(player2.gameBoard);
+
+
+
+// Get element from html 
+const board_Player1 = document.getElementById('board_player1');
+const board_Player2 = document.getElementById('board_player2');
+const resetButton = document.getElementById('resetBtn'); // Reset button 
+const newButton = document.getElementById('newGameBtn'); // New game button
+let infoBoard = document.getElementById('infoBoard'); // info board
+
+
+//Change turn name player
+let turn_Player = document.getElementById('turn_player');
+let currentPlayer = player1;
+let loser = player2;
+let strike;
+let roundCounter = 0;
+
+turn_Player.textContent = currentPlayer.name;
+
+//Player 1 Dashboard
+const name_player1 = document.getElementById('name_player1');
+const playerBoard1 = document.getElementById('player1');
+
+
+name_player1.textContent = player1.name;
+
+let ships_player1 = document.getElementById('ships_player1');
+
+
+//Player 2 Dashboard
+const name_player2 = document.getElementById('name_player2');
+const playerBoard2 = document.getElementById('player2');
+
+name_player2.textContent = player2.name;
+
+let ships_player2 = document.getElementById('ships_player2');
+
+
+//Reset game function
+resetGame = () => {
+  currentPlayer = player1;
+  board_Player1.innerHTML = '';
+  board_Player2.innerHTML = '';
+
+  ships_player1.textContent = 5;
+  ships_player2.textContent = 5;
+
+  name_player1.textContent = player1.name;
+  name_player2.textContent = player2.name;
+
+  player1.shipCount = howManyShips;
+  player2.shipCount = howManyShips;
+
+  askNamePlayers();
+
+  renderBoard(board_Player1);
+  renderBoard(board_Player2);
+}
+
+// New game function
+newGame = () => {
+  console.log('Click new game');
+  currentPlayer = player1;
+  board_Player1.innerHTML = '';
+  board_Player2.innerHTML = '';
+
+  name_player1.textContent = player1.name;
+  name_player2.textContent = player2.name;
+
+  //Set counter of ships 1 or 100
+  player1.shipCount = howManyShips;
+  player2.shipCount = howManyShips;
+
+  renderBoard(board_Player1);
+  renderBoard(board_Player2);
+}
+
+// Add Event Listner for buttons reset game and new game
+resetButton.addEventListener('click', resetGame);
+newButton.addEventListener('click', newGame);
+
+
+//Declaration function Color board wich is active now
+colorBoard = (currentPlayer) => {
+  if (currentPlayer === player1) {
+    playerBoard1.classList.remove('activePlayer');
+    playerBoard2.classList.add('activePlayer');
+  } else {
+    playerBoard2.classList.remove('activePlayer');
+    playerBoard1.classList.add('activePlayer');
+  }
+}
+
+//Declaration function Determine if the Player Sunk their Opponent's Ship
+didYouHitShip = (player, strikeX, strikeY, cell) => {
+
+  if (player.gameBoard[strikeX][strikeY] === 1) {
+    alert("Congratulation! You hit a ship! :)");
+    infoBoard.textContent = "Congratulation! You hit a ship! :)";
+    player.gameBoard[strikeX][strikeY] = 0; //remove ship from the board
+    player.shipCount--; //Decrise shipCounter
+    //change color cell for red
+    cell.style.background = "red";
+    cell.style.border = "2px solid red";
+  } else {
+    infoBoard.textContent = "Sorry you miss. Maybe next time. :(";
+    // cell.style.background = "purple";
+    cell.style.visibility = 'hidden';
+  }
+}
+
+//Change active board
+colorBoard(currentPlayer);
+
+
+//This function create player board in the DOM
+renderBoard = (player) => {
+  for (var x = 0; x < 4; x++) {
 
     const li = document.createElement('li'); // creating childs for the list (board), in this case represent a row number 'x' of the board
 
@@ -23,16 +207,93 @@ for (var x = 0; x < 4; x++) {
       cell.textContent = `${x},${y}`;  // saves the coordinates as a string value 'x,y'
       cell.value = 0;//state of the cell
 
+
       //this function adds the click event to each cell
-      cell.addEventListener( 'click', (e) => {
-          let cell = e.target; // get the element clicked
-          console.log( cell.textContent) //display the coordinates in the console
-          cell.style.visibility = 'hidden';// this  means that the contents of the element will be invisible, but the element stays in its original position and size / try it clicking on any of the black cells (in your browser) and see whats happens
-          //cell.style.background ="purple"; //with this propertie you can change the background color of the clicked cell. try comment the line bellow and uncomment this line. Do not forget to save this file and refresh the borwser to see the changes
+      cell.addEventListener('click', (e) => {
+
+        let cell = e.target; // get the element clicked
+        // console.log(cell.textContent);
+        //display the coordinates in the console
+        // cell.style.visibility = 'hidden';// this  means that the contents of the element will be invisible, but the element stays in its original position and size / try it clicking on any of the black cells (in your browser) and see whats happens
+        // console.log(player.id);
+
+        //Get coordinate cell -> Convert cell.textContent from string to array of numbers
+        strike = cell.textContent.split(',').map(element => parseInt(element));
+
+
+        // gameLogicTest(player, cell);
+
+
+        gameLogic(player, cell);
+
+
       });
 
       li.appendChild(cell); //adding each cell into the row number x
     }
 
-     board_Player1.appendChild(li); //adding each row into the board
-}
+    player.appendChild(li); //adding each row into the board
+  }
+
+};
+
+
+//Main logic of game
+gameLogic = (player, cell) => {
+  if (player.id === "board_player1" && currentPlayer === player2) {
+    didYouHitShip(player1, strike[0], strike[1], cell);
+    if (player1.shipCount > 0) {
+      currentPlayer = player1;
+    } else {
+      alert(`You Win:  ${player2.name}`);
+      resetGame(); //reset game
+    }
+
+  } else if (player.id === "board_player2" && currentPlayer === player1) {
+    didYouHitShip(player2, strike[0], strike[1], cell);
+    if (player2.shipCount > 0) {
+      currentPlayer = player2
+    } else {
+      alert(`You Win:  ${player1.name}`);
+      resetGame(); //reset game
+    }
+
+  } else {
+    alert("It is wrong board, please click on your opponent board");
+  }
+
+  //Change name of current player on the DOM
+  turn_Player.textContent = currentPlayer.name;
+
+  //Change active board
+  colorBoard(currentPlayer);
+
+  //Change counter of ships in the DOM 
+  ships_player1.textContent = player1.shipCount;
+  ships_player2.textContent = player2.shipCount;
+
+  console.log(currentPlayer.name);
+  roundCounter++;
+  console.log("GameLogic roundCounter: ", roundCounter);
+};
+
+
+
+
+renderBoard(board_Player1);
+renderBoard(board_Player2);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

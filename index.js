@@ -52,7 +52,10 @@ askNamePlayers();
 
 //Function that generate random 4 ships on the player board. Pass player object into the function
 addShipsToBoard = (player) => {
-
+  console.log(player.gameBoard);
+  //Reset game board all cells for 0
+  player.gameBoard.map(element => element * 0);
+  console.log(player.gameBoard);
   //Generate a random number from 0 to 3
   genRandomNum = () => {
     //return Math.floor(Math.random() * (max - min + 1) + min);
@@ -68,8 +71,8 @@ addShipsToBoard = (player) => {
     } else {
       i--;
     };
-
   }
+  console.log(player.gameBoard);
 };
 
 //Generate ships on the board for each player
@@ -88,16 +91,16 @@ const board_Player2 = document.getElementById('board_player2');
 const resetButton = document.getElementById('resetBtn'); // Reset button 
 const newButton = document.getElementById('newGameBtn'); // New game button
 let infoBoard = document.getElementById('infoBoard'); // info board
-
-
-//Change turn name player
 let turn_Player = document.getElementById('turn_player');
 let currentPlayer = player1;
 let loser = player2;
 let strike;
 let roundCounter = 0;
 
+
+//Change turn name player
 turn_Player.textContent = currentPlayer.name;
+
 
 //Player 1 Dashboard
 const name_player1 = document.getElementById('name_player1');
@@ -124,9 +127,6 @@ resetGame = () => {
   board_Player1.innerHTML = '';
   board_Player2.innerHTML = '';
 
-  ships_player1.textContent = 5;
-  ships_player2.textContent = 5;
-
   name_player1.textContent = player1.name;
   name_player2.textContent = player2.name;
 
@@ -134,6 +134,9 @@ resetGame = () => {
   player2.shipCount = howManyShips;
 
   askNamePlayers();
+
+  addShipsToBoard(player1);
+  addShipsToBoard(player2);
 
   renderBoard(board_Player1);
   renderBoard(board_Player2);
@@ -153,8 +156,11 @@ newGame = () => {
   player1.shipCount = howManyShips;
   player2.shipCount = howManyShips;
 
-  renderBoard(board_Player1);
-  renderBoard(board_Player2);
+  addShipsToBoard(player1); //Add ships on the board for Player 1
+  addShipsToBoard(player2); //Add ships on the board for Player 2
+
+  renderBoard(board_Player1); //Render new player1 board on the DOM
+  renderBoard(board_Player2); //Render new player1 board on the DOM
 }
 
 // Add Event Listner for buttons reset game and new game
@@ -226,6 +232,9 @@ renderBoard = (player) => {
 
         gameLogic(player, cell);
 
+        //Sound effect onClick
+        var snd = new Audio("file.wav"); // buffers automatically when created
+        snd.play();
 
       });
 
